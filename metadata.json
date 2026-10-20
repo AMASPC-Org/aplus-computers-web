@@ -1,0 +1,6 @@
+{
+  "name": "A+ Computers Olympia - Free Electronics Recycling",
+  "description": "Free local electronics recycling, computer repair, and refurbished sales in Olympia, WA. Washington State E-Cycle partner with 100% data destruction guaranteed.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
