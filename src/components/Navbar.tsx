@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
@@ -28,22 +28,23 @@ export default function Navbar() {
       }`}
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-20 sm:h-24 flex items-center justify-between relative">
-        {/* Left Side: Subtle desktop phone link (no green button) */}
-        <div className="w-1/4 hidden md:flex items-center">
+        {/* Left Side: One-tap phone button on mobile, full number on desktop */}
+        <div className="w-12 sm:w-1/4 flex items-center">
           <a
             href={BUSINESS.phoneTel}
-            className="group flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-700 hover:text-green-700 transition-colors"
-            title="Click to call A+ Computers Olympia"
+            className="group inline-flex items-center gap-2 p-2.5 md:p-0 rounded-xl bg-green-600/10 md:bg-transparent text-green-700 md:text-slate-700 hover:text-green-700 transition-colors"
+            title="Call A+ Computers Olympia"
+            aria-label="Call A+ Computers Olympia at (360) 754-1311"
           >
-            <div className="w-7 h-7 rounded-full bg-slate-200/80 group-hover:bg-green-100 flex items-center justify-center transition-colors">
-              <Phone className="w-3.5 h-3.5 text-slate-700 group-hover:text-green-700" />
+            <div className="w-6 h-6 md:w-8 md:h-8 rounded-full md:bg-slate-200/80 group-hover:bg-green-100 flex items-center justify-center transition-colors">
+              <Phone className="w-4 h-4 md:w-4 md:h-4 text-green-700 md:text-slate-700 group-hover:text-green-700" />
             </div>
-            <span>{BUSINESS.phoneDisplay}</span>
+            <span className="hidden md:inline text-sm font-semibold">{BUSINESS.phoneDisplay}</span>
           </a>
         </div>
 
-        {/* Center: Official Logo from mockup */}
-        <div className="flex-1 md:w-2/4 flex justify-center items-center">
+        {/* Center: Official Logo */}
+        <div className="flex-1 flex justify-center items-center px-2">
           <a
             href="#"
             className="flex items-center justify-center py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-600 rounded"
@@ -55,19 +56,19 @@ export default function Navbar() {
               width={260}
               height={43}
               priority
-              className="h-10 sm:h-12 md:h-14 w-auto object-contain"
+              className="h-9 sm:h-12 md:h-14 w-auto object-contain"
             />
           </a>
         </div>
 
-        {/* Right Side: Hamburger Button */}
-        <div className="w-1/4 flex justify-end items-center">
+        {/* Right Side: Hamburger Button (44px+ mobile touch target) */}
+        <div className="w-12 sm:w-1/4 flex justify-end items-center">
           <button
             type="button"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-expanded={isMenuOpen}
             aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
-            className="p-2 sm:p-2.5 rounded-lg text-slate-800 hover:bg-slate-200/80 active:scale-95 transition focus:outline-none focus:ring-2 focus:ring-green-600"
+            className="p-2.5 rounded-xl text-slate-800 hover:bg-slate-200/80 active:scale-95 transition focus:outline-none focus:ring-2 focus:ring-green-600"
           >
             {isMenuOpen ? (
               <X className="w-6 h-6 sm:w-7 sm:h-7" />
@@ -80,9 +81,7 @@ export default function Navbar() {
 
       {/* Slide-down / Dropdown Navigation Menu */}
       {isMenuOpen && (
-        <div
-          className="absolute right-0 top-full w-full md:w-80 bg-white border-b md:border md:rounded-2xl border-slate-200 shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150 z-50"
-        >
+        <div className="absolute right-0 top-full w-full md:w-80 bg-white border-b md:border md:rounded-2xl border-slate-200 shadow-xl overflow-hidden z-50">
           <div className="p-4 sm:p-5 flex flex-col space-y-3">
             <div className="border-b border-slate-100 pb-3">
               <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
@@ -92,41 +91,40 @@ export default function Navbar() {
                 <a
                   href="#what-we-accept"
                   onClick={closeMenu}
-                  className="px-3 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-100 hover:text-green-700 rounded-lg transition"
+                  className="px-3 py-2.5 text-base sm:text-sm font-semibold text-slate-800 hover:bg-slate-100 hover:text-green-700 rounded-lg transition"
                 >
                   What We Accept
                 </a>
                 <a
                   href="#sales-services"
                   onClick={closeMenu}
-                  className="px-3 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-100 hover:text-green-700 rounded-lg transition"
+                  className="px-3 py-2.5 text-base sm:text-sm font-semibold text-slate-800 hover:bg-slate-100 hover:text-green-700 rounded-lg transition"
                 >
-                  Sales & Services
+                  Sales &amp; Services
                 </a>
                 <a
                   href="#location-hours"
                   onClick={closeMenu}
-                  className="px-3 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-100 hover:text-green-700 rounded-lg transition"
+                  className="px-3 py-2.5 text-base sm:text-sm font-semibold text-slate-800 hover:bg-slate-100 hover:text-green-700 rounded-lg transition"
                 >
-                  Location & Hours
+                  Location &amp; Hours
                 </a>
                 <a
                   href="#contact"
                   onClick={closeMenu}
-                  className="px-3 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-100 hover:text-green-700 rounded-lg transition"
+                  className="px-3 py-2.5 text-base sm:text-sm font-semibold text-slate-800 hover:bg-slate-100 hover:text-green-700 rounded-lg transition"
                 >
                   Get in Touch
                 </a>
               </nav>
             </div>
 
-            {/* Quick Contact & Details */}
             <div className="pt-1 flex flex-col space-y-2.5 text-xs text-slate-600">
               <a
                 href={BUSINESS.phoneTel}
-                className="flex items-center gap-2.5 p-2.5 rounded-lg bg-green-50 text-green-800 font-bold hover:bg-green-100 transition"
+                className="flex items-center gap-2.5 p-3 rounded-xl bg-green-50 text-green-800 font-bold text-sm hover:bg-green-100 transition"
               >
-                <Phone className="w-4 h-4 text-green-700" />
+                <Phone className="w-4 h-4 text-green-700 shrink-0" />
                 <span>Call Us: {BUSINESS.phoneDisplay}</span>
               </a>
 

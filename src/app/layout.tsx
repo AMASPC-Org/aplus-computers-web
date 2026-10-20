@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+﻿import type { Metadata } from 'next';
 import './globals.css';
 import { BUSINESS } from '@/data/business';
 
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: '/assets/aistudio/Homepage_for_A__Computers_v1_a0b7dc41.jpg',
+        url: '/assets/aistudio/A__Computers_Logo_1200x198_png_01b4d9e2.png',
         width: 1200,
         height: 630,
         alt: 'A+ Computers Olympia - Free Local E-Recycling and Repair',
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     title: 'A+ Computers Olympia | Free Local E-Recycling',
     description:
       'Free electronics recycling in Olympia, WA. Drop off computers, laptops, phones, monitors & printers. Easy drop-off: Pull up & unload.',
-    images: ['/assets/aistudio/Homepage_for_A__Computers_v1_a0b7dc41.jpg'],
+    images: ['/assets/aistudio/A__Computers_Logo_1200x198_png_01b4d9e2.png'],
   },
   robots: {
     index: true,
@@ -208,9 +208,10 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdGraph) }}
         />
       </head>
-      <body className="bg-slate-50 text-slate-900 min-h-screen flex flex-col font-sans selection:bg-green-100 selection:text-green-900" suppressHydrationWarning>
+      <body className="bg-slate-50 text-slate-900 min-h-screen overflow-x-hidden flex flex-col font-sans selection:bg-green-100 selection:text-green-900" suppressHydrationWarning>
         {children}
       </body>
     </html>
   );
 }
+
