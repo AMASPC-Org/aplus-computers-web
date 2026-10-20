@@ -1,4 +1,4 @@
-import { initializeApp, getApps, getApp } from 'firebase/app';
+﻿import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getFirestore, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { ContactSubmission, ContactSubmissionSchema, ApiResponse } from './validation';
 
@@ -42,13 +42,41 @@ export function getDb() {
 }
 
 /**
+ * Fires an instant email notification to apluscomputersolympia@gmail.com via FormSubmit AJAX
+ */
+async function sendEmailNotification(cleanData: ContactSubmission): Promise<boolean> {
+  try {
+    const response = await fetch('https://formsubmit.co/ajax/apluscomputersolympia@gmail.com', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        _subject: `New Website Inquiry from ${cleanData.name} - A+ Computers Olympia`,
+        _replyto: cleanData.email.trim(),
+        _template: 'table',
+        Name: cleanData.name.trim(),
+        Email: cleanData.email.trim().toLowerCase(),
+        Phone: cleanData.phone ? cleanData.phone.trim() : 'Not provided',
+        Message: cleanData.message.trim(),
+        Source: typeof window !== 'undefined' ? window.location.href : 'https://apluscomputerrecycle.com',
+      }),
+    });
+    return response.ok;
+  } catch (err) {
+    console.warn('Email notification warning:', err);
+    return false;
+  }
+}
+
+/**
  * Submits a contact inquiry to Firestore collection `contact_submissions`
- * Validates with ContactSubmissionSchema prior to any network call.
- * Gracefully stores to local storage if Firebase credentials aren't supplied yet.
+ * AND dispatches an instant email notification to apluscomputersolympia@gmail.com.
  */
 export async function submitContactLead(formData: unknown): Promise<ApiResponse> {
   const validationResult = ContactSubmissionSchema.safeParse(formData);
-  
+
   if (!validationResult.success) {
     const firstIssue = validationResult.error.issues[0];
     return {
@@ -61,45 +89,42 @@ export async function submitContactLead(formData: unknown): Promise<ApiResponse>
 
   try {
     const db = getDb();
-    if (db) {
-      const docRef = await addDoc(collection(db, 'contact_submissions'), {
-        name: cleanData.name.trim(),
-        email: cleanData.email.trim().toLowerCase(),
-        phone: cleanData.phone ? cleanData.phone.trim() : null,
-        message: cleanData.message.trim(),
-        createdAt: serverTimestamp(),
-        sourceUrl: typeof window !== 'undefined' ? window.location.href : 'https://apluscomputerrecycle.com',
-        clientUserAgent: typeof navigator !== 'undefined' ? navigator.userAgent : null,
-      });
+    let docId = 'lead_' + Date.now();
 
-      return {
-        success: true,
-        message: 'Thank you for reaching out! We received your message and will get back to you shortly.',
-        id: docRef.id,
-      };
-    } else {
-      // Graceful fallback for preview / initial export
-      if (typeof window !== 'undefined') {
-        try {
-          const storageKey = 'aplus_contact_submissions';
-          const saved = JSON.parse(localStorage.getItem(storageKey) || '[]');
-          saved.push({
-            ...cleanData,
-            timestamp: new Date().toISOString(),
-            id: 'local_' + Math.random().toString(36).substring(2, 9),
-          });
-          localStorage.setItem(storageKey, JSON.stringify(saved));
-        } catch {
-          // Ignore local storage error
-        }
-      }
+    // Run Firestore save and Email alert in parallel
+    const firestorePromise = db
+      ? addDoc(collection(db, 'contact_submissions'), {
+          name: cleanData.name.trim(),
+          email: cleanData.email.trim().toLowerCase(),
+          phone: cleanData.phone ? cleanData.phone.trim() : null,
+          message: cleanData.message.trim(),
+          createdAt: serverTimestamp(),
+          sourceUrl: typeof window !== 'undefined' ? window.location.href : 'https://apluscomputerrecycle.com',
+          clientUserAgent: typeof navigator !== 'undefined' ? navigator.userAgent : null,
+        })
+      : Promise.resolve(null);
 
-      return {
-        success: true,
-        message: 'Thank you! Your message has been received. We will get back to you during shop hours (Tue-Fri 2-5 PM).',
-        id: 'mock_' + Date.now(),
-      };
+    const [docRef, emailSent] = await Promise.all([
+      firestorePromise.catch((e) => {
+        console.warn('Firestore write warning:', e);
+        return null;
+      }),
+      sendEmailNotification(cleanData),
+    ]);
+
+    if (docRef && docRef.id) {
+      docId = docRef.id;
     }
+
+    if (!docRef && !emailSent) {
+      throw new Error('Both Firestore and Email dispatch failed');
+    }
+
+    return {
+      success: true,
+      message: 'Thank you for reaching out! We received your message and will get back to you shortly.',
+      id: docId,
+    };
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
     console.error('Failed to submit contact inquiry:', error);
